@@ -11,10 +11,12 @@ class DisplayWindow{
     private:
         std::string windowName;
         bool debugShowFrameIndex = false;
+        bool debugStepByStep = false;
     public:
         DisplayWindow(IniConfigurationManager &config){
             this->windowName = config.getString("DISPLAY_WINDOW", "name", "Display Window");
             this->debugShowFrameIndex = config.getBool("DEBUG", "showFrameIndex", false);
+            this->debugStepByStep = config.getBool("DEBUG", "stepByStepFrame", false);
             cv::namedWindow(windowName, cv::WINDOW_NORMAL);
         }
         void updateWindow(Frame frame){
@@ -22,7 +24,7 @@ class DisplayWindow{
                 cv::putText(frame.getFrameMatrix(), "Frame Index: " + std::to_string(frame.getFrameIndex()), cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
             }
             cv::imshow(windowName, frame.getFrameMatrix());
-            cv::waitKey(1);
+            cv::waitKey(this->debugStepByStep ? 0 : 1);
         }
         void destroyWindow(){
             cv::destroyWindow(windowName);
