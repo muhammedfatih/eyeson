@@ -39,6 +39,14 @@ class IniConfigurationManager{
             std::string value = getString(section, key, defaultValue ? "true" : "false");
             return value == "true";
         }
+        float getFloat(std::string section, std::string key, float defaultValue){
+            std::string value = getString(section, key, std::to_string(defaultValue));
+            return std::stof(value);
+        }
+        int getInt(std::string section, std::string key, int defaultValue){
+            std::string value = getString(section, key, std::to_string(defaultValue));
+            return std::stoi(value);
+        }
 };
 
 
