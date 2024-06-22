@@ -20,6 +20,11 @@ class DetectedObject{
         float getConfidence() const {
             return confidence;
         }
+        float getDistance(DetectedObject other) const {
+            cv::Point center1 = cv::Point(boundingBox.x + boundingBox.width / 2, boundingBox.y + boundingBox.height / 2);
+            cv::Point center2 = cv::Point(other.boundingBox.x + other.boundingBox.width / 2, other.boundingBox.y + other.boundingBox.height / 2);
+            return cv::norm(center1 - center2);
+        }
 };
 
 #endif
