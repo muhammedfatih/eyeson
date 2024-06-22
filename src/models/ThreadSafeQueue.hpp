@@ -4,31 +4,38 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <chrono>
 
 template <typename T>
 class ThreadSafeQueue {
-    private:
-        std::queue<T> q;
-        mutable std::mutex m;
-        std::condition_variable cv;
-    public:
-        ThreadSafeQueue() {}
-        void push(T val) {
-            std::lock_guard<std::mutex> lock(m);
-            q.push(val);
-            cv.notify_one();
+private:
+    std::queue<T> q;
+    mutable std::mutex m;
+    std::condition_variable cv;
+
+public:
+    ThreadSafeQueue() {}
+
+    void push(T val) {
+        std::unique_lock<std::mutex> lock(m);
+        q.push(val);
+        cv.notify_one();
+    }
+
+    bool tryPop(T& val) {
+        std::unique_lock<std::mutex> lock(m);
+        if (q.empty()) {
+            return false;
         }
-        T pop() {
-            std::unique_lock<std::mutex> lock(m);
-            cv.wait(lock, [this] { return !q.empty(); });
-            T val = q.front();
-            q.pop();
-            return val;
-        }
-        bool empty() const {
-            std::lock_guard<std::mutex> lock(m);
-            return q.empty();
-        }
+        val = q.front();
+        q.pop();
+        return true;
+    }
+
+    bool empty() const {
+        std::unique_lock<std::mutex> lock(m);
+        return q.empty();
+    }
 };
 
 #endif

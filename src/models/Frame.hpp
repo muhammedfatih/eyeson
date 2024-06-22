@@ -10,6 +10,7 @@ class Frame {
         cv::Mat frameMatrix;
         int frameIndex;
     public:
+        Frame() {}
         Frame(cv::Mat frameMatrix, int frameIndex) : frameMatrix(frameMatrix), frameIndex(frameIndex) {}
         cv::Mat getFrameMatrix() const {
             return frameMatrix;
