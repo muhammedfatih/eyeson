@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - resources_volume:/app/resources
+      - config_volume:/app/config
+      - nearmisses_volume:/app/nearmisses
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - resources_volume:/app/resources
+    command: npm start
+
+  app:
+    build:
+      context: ./app
+    container_name: app
+    volumes:
+      - resources_volume:/app/resources
+      - config_volume:/app/config
+      - nearmisses_volume:/app/nearmisses
+    command: /app/bin/eyeson
+
+volumes:
+  resources_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./app/resources
+  config_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./app/config
+  nearmisses_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./app/nearmisses

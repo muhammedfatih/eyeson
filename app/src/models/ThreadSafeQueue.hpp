@@ -22,6 +22,15 @@ public:
         cv.notify_one();
     }
 
+    bool tryTop(T& val) {
+        std::unique_lock<std::mutex> lock(m);
+        if (q.empty()) {
+            return false;
+        }
+        val = q.front();
+        return true;
+    }
+
     bool tryPop(T& val) {
         std::unique_lock<std::mutex> lock(m);
         if (q.empty()) {
