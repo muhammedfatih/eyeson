@@ -5,6 +5,7 @@
 #include <map>
 #include <fstream>
 #include <iostream>
+#include "StringUtil.hpp"
 
 class IniConfigurationManager{
     private:
@@ -21,19 +22,22 @@ class IniConfigurationManager{
             while(std::getline(file, line)){
                 if(line.empty() || line[0] == ';') continue;
                 if(line[0] == '['){
-                    currentSection = line.substr(1, line.size() - 2);
+                    currentSection = trim(line.substr(1, line.size() - 2));
                     continue;
                 }
                 auto delimiter = line.find('=');
                 if(delimiter == std::string::npos) continue;
-                auto key = line.substr(0, delimiter);
-                auto value = line.substr(delimiter + 1);
+                auto key = trim(line.substr(0, delimiter));
+                auto value = trim(line.substr(delimiter + 1));
                 data[currentSection][key] = value;
             }
         }
         std::string getString(std::string section, std::string key, std::string defaultValue){
+            section = trim(section);
+            key = trim(key);
             if(data[section].find(key) == data[section].end()) return defaultValue;
-            return data[section][key];
+            std::string value = trim(data[section][key]);
+            return value;
         }
         bool getBool(std::string section, std::string key, bool defaultValue){
             std::string value = getString(section, key, defaultValue ? "true" : "false");

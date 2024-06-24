@@ -1,0 +1,15 @@
+# Python
+backend/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+
+# React
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+# App
+app/bin/*
+app/nearmisses/*
+app/resources/*.jpg

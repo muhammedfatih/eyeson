@@ -8,7 +8,7 @@
 #include <fstream>
 #include "../models/DetectedObject.hpp"
 #include "../models/Frame.hpp"
-#include "../models/IniConfigurationManager.hpp"
+#include "../library/IniConfigurationManager.hpp"
 
 class ObjectDetector{
 private:
@@ -25,10 +25,9 @@ public:
         std::string modelWeights = config.getString("DETECTOR", "weight", "");
         std::string classNamesFile = config.getString("DETECTOR", "names", "");
         confidenceThreshold = config.getFloat("DETECTOR", "threshold", 0.5);
-        nmsThreshold = config.getFloat("DETECTOR", "nms_threshold", 0.4);
-        networkWidth = config.getInt("DETECTOR", "network_width", 416);
-        networkHeight = config.getInt("DETECTOR", "network_height", 416);
-
+        nmsThreshold = config.getFloat("DETECTOR", "nms", 0.4);
+        networkWidth = config.getInt("DETECTOR", "networkwidth", 416);
+        networkHeight = config.getInt("DETECTOR", "networkheight", 416);
         net = cv::dnn::readNetFromDarknet(modelConfiguration, modelWeights);
         if (net.empty()) {
             std::cerr << "Error: Could not load the model." << std::endl;

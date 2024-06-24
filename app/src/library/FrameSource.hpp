@@ -10,7 +10,7 @@
 #include <atomic>
 #include <iostream>
 #include "../models/Frame.hpp"
-#include "../models/IniConfigurationManager.hpp"
+#include "../library/IniConfigurationManager.hpp"
 
 class FrameSource{
     private:
@@ -23,7 +23,7 @@ class FrameSource{
         FrameSource(IniConfigurationManager &config){
             std::string source = config.getString("SOURCE", "path", "");
             bool loop = config.getBool("SOURCE", "loop", true);
-            showFrameFetchError = config.getBool("DEBUG", "showFrameFetchError", false);
+            showFrameFetchError = config.getBool("DEBUG", "showframefetcherror", false);
 
             capture = cv::VideoCapture(source);
             lastFrameIndex = 0;

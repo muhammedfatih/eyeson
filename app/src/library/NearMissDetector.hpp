@@ -4,7 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "../models/ProcessedFrame.hpp"
-#include "../models/IniConfigurationManager.hpp"
+#include "../library/IniConfigurationManager.hpp"
 
 class NearMissDetector{
     private:
@@ -37,10 +37,10 @@ class NearMissDetector{
             class1 = config.getString("NEARMISS", "class1", "car");
             class2 = config.getString("NEARMISS", "class2", "person");
             output = config.getString("NEARMISS", "output", "../../nearmisses/");
-            inflationSmallImage = config.getFloat("NEARMISS", "inflationSmallImage", 0.2);
+            inflationSmallImage = config.getFloat("NEARMISS", "inflationsmallimage", 0.2);
             nearMissDistance = config.getInt("NEARMISS", "distance", 100);
-            shouldSaveBigImage = config.getBool("NEARMISS", "saveBigImage", true);
-            shouldSaveSmallImage = config.getBool("NEARMISS", "saveSmallImage", true);
+            shouldSaveBigImage = config.getBool("NEARMISS", "savebigimage", true);
+            shouldSaveSmallImage = config.getBool("NEARMISS", "savesmallimage", true);
         }
         void save(ProcessedFrame processedFrame){
             std::vector<DetectedObject> detectedObjects = processedFrame.getDetectedObjects();

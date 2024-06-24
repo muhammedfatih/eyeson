@@ -3,13 +3,14 @@
 #include <opencv2/opencv.hpp>
 #include "models/ThreadSafeQueue.hpp"
 #include "models/DetectedObject.hpp"
-#include "models/IniConfigurationManager.hpp"
+#include "library/IniConfigurationManager.hpp"
 #include "models/Frame.hpp"
 #include "models/ProcessedFrame.hpp"
 #include "library/FrameSource.hpp"
 #include "library/DisplayWindow.hpp"
 #include "library/ObjectDetector.hpp"
 #include "library/NearMissDetector.hpp"
+#include "library/LastFrameSaver.hpp"
 
 void fetchFrame(IniConfigurationManager& config, ThreadSafeQueue<Frame>& queue) {
     FrameSource source(config);
@@ -36,8 +37,6 @@ void processFrame(IniConfigurationManager& config, ThreadSafeQueue<Frame>& fetch
 void checkNearMisses(IniConfigurationManager& config, ThreadSafeQueue<ProcessedFrame>& processedFrameQueue, ThreadSafeQueue<Frame>& displayFrameQueue) {
     NearMissDetector detector(config);
     while(true){
-        std::vector<DetectedObject> buses;
-        std::vector<DetectedObject> trafficLights;
         ProcessedFrame processedFrame;
         if(processedFrameQueue.tryPop(processedFrame)){
             displayFrameQueue.push(processedFrame.draw());
@@ -48,8 +47,25 @@ void checkNearMisses(IniConfigurationManager& config, ThreadSafeQueue<ProcessedF
     }
 }
 
-int main() {
-    IniConfigurationManager config("config.ini");
+void saveLastFrame(IniConfigurationManager& config, ThreadSafeQueue<Frame>& displayFrameQueue) {
+    LastFrameSaver saver(config);
+    while (true) {
+        Frame frame;
+        if (displayFrameQueue.tryPop(frame)) {
+            saver.save(frame);
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    }
+}
+
+int main(int argc, char** argv) {
+    std::string configPath = "/app/config/config.ini";
+    if (argc > 1) {
+        configPath = argv[1];
+    }
+
+    IniConfigurationManager config(configPath);
     DisplayWindow window(config);
 
     ThreadSafeQueue<Frame> fetchedFrameQueue;
@@ -59,11 +75,12 @@ int main() {
     std::thread threadFetchFrame(fetchFrame, std::ref(config), std::ref(fetchedFrameQueue));
     std::thread threadProcessFrame(processFrame, std::ref(config), std::ref(fetchedFrameQueue), std::ref(processedFrameQueue));
     std::thread threadCheckNearMisses(checkNearMisses, std::ref(config), std::ref(processedFrameQueue), std::ref(displayFrameQueue));
+    std::thread threadSaveLastFrame(saveLastFrame, std::ref(config), std::ref(displayFrameQueue));
 
     while (true) {
         Frame frame;
         if (displayFrameQueue.tryPop(frame)) {
-            window.updateWindow(frame);
+           window.updateWindow(frame);
         } else {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
