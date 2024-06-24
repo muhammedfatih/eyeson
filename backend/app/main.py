@@ -14,6 +14,9 @@ app.add_middleware(
 
 config = ConfigParser()
 config_file = os.getenv("CONFIG_FILE")
+if config_file is None:
+    config_file = "/app/config/config.ini"
+
 config.read(config_file)
 output_folder = config["NEARMISS"]["output"]
 last_frame_path = config["BACKEND"]["lastframepath"]

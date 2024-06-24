@@ -12,3 +12,4 @@ frontend/dist/
 # App
 app/bin/*
 app/nearmisses/*
+app/resources/*.jpg
